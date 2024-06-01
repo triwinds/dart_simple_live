@@ -33,7 +33,7 @@ class FollowUserItem extends StatelessWidget {
       ),
       title: Text.rich(
         TextSpan(
-          text: item.userName,
+          text: item.title != "" ? '${item.title}(${item.userName})' : "${item.userName} 的直播间",
           children: [
             WidgetSpan(
               alignment: ui.PlaceholderAlignment.middle,

@@ -9,6 +9,7 @@ import '../model/live_search_result.dart';
 import '../model/live_category.dart';
 import '../model/live_play_quality.dart';
 import '../model/live_room_item.dart';
+import '../model/live_status.dart';
 
 class LiveSite {
   /// 站点唯一ID
@@ -77,8 +78,11 @@ class LiveSite {
   }
 
   /// 查询直播状态
-  Future<bool> getLiveStatus({required String roomId}) {
-    return Future.value(false);
+  Future<LiveStatus> getLiveStatus({required String roomId}) {
+    return Future.value(LiveStatus(
+      title: '',
+      status: false,
+    ));
   }
 
   /// 读取指定房间的SC

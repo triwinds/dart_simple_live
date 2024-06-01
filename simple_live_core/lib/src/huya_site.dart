@@ -13,6 +13,7 @@ import 'package:simple_live_core/src/model/live_search_result.dart';
 import 'package:simple_live_core/src/model/live_room_detail.dart';
 import 'package:simple_live_core/src/model/live_play_quality.dart';
 import 'package:simple_live_core/src/model/live_category_result.dart';
+import 'package:simple_live_core/src/model/live_status.dart';
 import 'package:crypto/crypto.dart';
 
 class HuyaSite implements LiveSite {
@@ -386,7 +387,7 @@ class HuyaSite implements LiveSite {
   }
 
   @override
-  Future<bool> getLiveStatus({required String roomId}) async {
+  Future<LiveStatus> getLiveStatus({required String roomId}) async {
     var resultText = await HttpClient.instance
         .getText("https://m.huya.com/$roomId", queryParameters: {}, header: {
       "user-agent": kUserAgent,
@@ -403,7 +404,7 @@ class HuyaSite implements LiveSite {
       return '""';
     });
     var jsonObj = json.decode(jsonText);
-    return jsonObj["roomInfo"]["eLiveStatus"] == 2;
+    return LiveStatus(title: jsonObj["roomInfo"]["tLiveInfo"]["sIntroduction"], status: jsonObj["roomInfo"]["eLiveStatus"] == 2);
   }
 
   /// 匿名登录获取uid

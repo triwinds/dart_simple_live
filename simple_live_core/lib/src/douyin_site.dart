@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:simple_live_core/simple_live_core.dart';
 import 'package:simple_live_core/src/common/convert_helper.dart';
 import 'package:simple_live_core/src/common/http_client.dart';
+import 'package:simple_live_core/src/model/live_status.dart';
 
 class DouyinSite implements LiveSite {
   @override
@@ -456,13 +457,13 @@ class DouyinSite implements LiveSite {
   }
 
   @override
-  Future<bool> getLiveStatus({required String roomId}) async {
+  Future<LiveStatus> getLiveStatus({required String roomId}) async {
     if (roomId.length < 15) {
       var result = await _getWebRoomInfo(roomId);
-      return result["roomStore"]["roomInfo"]["room"]["status"] == 2;
+      return LiveStatus(title: "", status: (asT<int?>(result["data"]["room"]["status"]) ?? 0) == 2);
     }
     var result = await _getRoomInfo(roomId);
-    return (asT<int?>(result["data"]["room"]["status"]) ?? 0) == 2;
+    return LiveStatus(title: "", status: (asT<int?>(result["data"]["room"]["status"]) ?? 0) == 2);
   }
 
   @override

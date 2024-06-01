@@ -11,6 +11,7 @@ import 'package:simple_live_core/src/model/live_search_result.dart';
 import 'package:simple_live_core/src/model/live_room_detail.dart';
 import 'package:simple_live_core/src/model/live_play_quality.dart';
 import 'package:simple_live_core/src/model/live_category_result.dart';
+import 'package:simple_live_core/src/model/live_status.dart';
 
 class BiliBiliSite implements LiveSite {
   @override
@@ -336,7 +337,7 @@ class BiliBiliSite implements LiveSite {
   }
 
   @override
-  Future<bool> getLiveStatus({required String roomId}) async {
+  Future<LiveStatus> getLiveStatus({required String roomId}) async {
     var result = await HttpClient.instance.getJson(
       "https://api.live.bilibili.com/room/v1/Room/get_info",
       queryParameters: {
@@ -348,7 +349,7 @@ class BiliBiliSite implements LiveSite {
               "cookie": cookie,
             },
     );
-    return (asT<int?>(result["data"]["live_status"]) ?? 0) == 1;
+    return LiveStatus(title: result["data"]["title"], status: (asT<int?>(result["data"]["live_status"]) ?? 0) == 1);
   }
 
   @override

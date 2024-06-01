@@ -13,6 +13,7 @@ import 'package:simple_live_core/src/model/live_search_result.dart';
 import 'package:simple_live_core/src/model/live_room_detail.dart';
 import 'package:simple_live_core/src/model/live_play_quality.dart';
 import 'package:simple_live_core/src/model/live_category_result.dart';
+import 'package:simple_live_core/src/model/live_status.dart';
 import 'package:html_unescape/html_unescape.dart';
 
 class DouyuSite implements LiveSite {
@@ -302,9 +303,9 @@ class DouyuSite implements LiveSite {
   }
 
   @override
-  Future<bool> getLiveStatus({required String roomId}) async {
+  Future<LiveStatus> getLiveStatus({required String roomId}) async {
     var detail = await getRoomDetail(roomId: roomId);
-    return detail.status;
+    return LiveStatus(title: detail.title, status: detail.status);
   }
 
   Future<String> getPlayArgs(String html, String rid) async {
