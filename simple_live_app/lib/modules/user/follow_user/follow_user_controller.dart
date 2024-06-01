@@ -253,95 +253,58 @@ class FollowUserController extends BasePageController<FollowUser> {
 
   void exportWebdav() async {
     var json = generateJson();
-    var username = LocalStorageService.instance.getValue(LocalStorageService.kWebdavUsername, "");
-    var password = LocalStorageService.instance.getValue(LocalStorageService.kWebdavPassword, "");
-    var webdavUrl = LocalStorageService.instance.getValue(LocalStorageService.kWebdavUrl, "https://www.example.com");
-    var webdavUrlCtl = TextEditingController(text: webdavUrl);
-    var usernameCtl = TextEditingController(text: username);
-    var passwordCtl = TextEditingController(text: password);
-
-    await Get.dialog(
-      AlertDialog(
-        title: const Text("导出至 Webdav"),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          //position
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            TextField(
-              controller: webdavUrlCtl,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                hintText: "请输入 Webdav 地址",
-              ),
-              maxLines: 1,),
-            TextField(
-              controller: usernameCtl,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                hintText: "请输入 Webdav 用户名",
-              ),
-              maxLines: 1,),
-            TextField(
-              controller: passwordCtl,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                hintText: "请输入 Webdav 密码",
-              ),
-              maxLines: 1,)
-            ]),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-            },
-            child: const Text("关闭"),
-          ),
-          TextButton(
-            onPressed: () async {
-              // Utils.copyToClipboard(content);
-              Log.d("${webdavUrlCtl.text} ${usernameCtl.text} ${passwordCtl.text}");
-              LocalStorageService.instance.setValue(LocalStorageService.kWebdavUrl, webdavUrlCtl.text);
-              LocalStorageService.instance.setValue(LocalStorageService.kWebdavUsername, usernameCtl.text);
-              LocalStorageService.instance.setValue(LocalStorageService.kWebdavPassword, passwordCtl.text);
-              username = usernameCtl.text;
-              password = passwordCtl.text;
-              webdavUrl = webdavUrlCtl.text;
-              Map<String, String> headers = {};
-              if (username.isNotEmpty && password.isNotEmpty) {
-                headers["Authorization"] = "Basic ${base64Encode(utf8.encode("$username:$password"))}";
-              }
-              var response = await http.put(
-                Uri.parse("$webdavUrl/simple_live_follows.json"),
-                headers: headers,
-                body: json,
-              );
-              Log.d("response:${response.statusCode}, ${response.body}");
-              if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-                SmartDialog.showToast("导出成功");
-              } else {
-                SmartDialog.showToast("导出失败, status code: ${response.statusCode}");
-              }
-              Get.back();
-            },
-            child: const Text("导出"),
-          ),
-        ],
-      ),
-    );
+    webdavDialog((webdavUrl, username, password) async {
+      Map<String, String> headers = {};
+      if (username.isNotEmpty && password.isNotEmpty) {
+        headers["Authorization"] = "Basic ${base64Encode(utf8.encode("$username:$password"))}";
+      }
+      var response = await http.put(
+        Uri.parse("$webdavUrl/simple_live_follows.json"),
+        headers: headers,
+        body: json,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
+        SmartDialog.showToast("导出成功");
+      } else {
+        SmartDialog.showToast("导出失败, status code: ${response.statusCode}");
+      }
+    }, "导出");
   }
 
   void importWebdav() async {
+    webdavDialog((webdavUrl, username, password) async {
+      Map<String, String> headers = {};
+      if (username.isNotEmpty && password.isNotEmpty) {
+        headers["Authorization"] = "Basic ${base64Encode(utf8.encode("$username:$password"))}";
+      }
+      var response = await http.get(
+        Uri.parse("$webdavUrl/simple_live_follows.json"),
+        headers: headers,
+      );
+      Log.d("response:${response.statusCode}, ${utf8.decode(response.bodyBytes)}");
+      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
+        try {
+          await inputJson(utf8.decode(response.bodyBytes));
+          refreshData();
+          SmartDialog.showToast("导入成功");
+        } on Exception catch (e, stacktrace) {
+          Log.e("Fail to import json, $e", stacktrace);
+          SmartDialog.showToast("导入失败");
+        }
+        
+      } else {
+        SmartDialog.showToast("导入失败, status code: ${response.statusCode}");
+      }
+    }, "导入");
+  }
+
+  void webdavDialog(Function onBtnPressed, final String btnName) async {
     var username = LocalStorageService.instance.getValue(LocalStorageService.kWebdavUsername, "");
     var password = LocalStorageService.instance.getValue(LocalStorageService.kWebdavPassword, "");
     var webdavUrl = LocalStorageService.instance.getValue(LocalStorageService.kWebdavUrl, "https://www.example.com");
     var webdavUrlCtl = TextEditingController(text: webdavUrl);
     var usernameCtl = TextEditingController(text: username);
     var passwordCtl = TextEditingController(text: password);
-
     await Get.dialog(
       AlertDialog(
         title: const Text("导出至 Webdav"),
@@ -384,39 +347,16 @@ class FollowUserController extends BasePageController<FollowUser> {
           ),
           TextButton(
             onPressed: () async {
-              // Utils.copyToClipboard(content);
-              Log.d("${webdavUrlCtl.text} ${usernameCtl.text} ${passwordCtl.text}");
               LocalStorageService.instance.setValue(LocalStorageService.kWebdavUrl, webdavUrlCtl.text);
               LocalStorageService.instance.setValue(LocalStorageService.kWebdavUsername, usernameCtl.text);
               LocalStorageService.instance.setValue(LocalStorageService.kWebdavPassword, passwordCtl.text);
               username = usernameCtl.text;
               password = passwordCtl.text;
               webdavUrl = webdavUrlCtl.text;
-              Map<String, String> headers = {};
-              if (username.isNotEmpty && password.isNotEmpty) {
-                headers["Authorization"] = "Basic ${base64Encode(utf8.encode("$username:$password"))}";
-              }
-              var response = await http.get(
-                Uri.parse("$webdavUrl/simple_live_follows.json"),
-                headers: headers,
-              );
-              Log.d("response:${response.statusCode}, ${utf8.decode(response.bodyBytes)}");
-              if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-                try {
-                  await inputJson(utf8.decode(response.bodyBytes));
-                  refreshData();
-                  SmartDialog.showToast("导入成功");
-                } on Exception catch (e, stacktrace) {
-                  Log.e("Fail to import json, $e", stacktrace);
-                  SmartDialog.showToast("导入失败");
-                }
-                
-              } else {
-                SmartDialog.showToast("导入失败, status code: ${response.statusCode}");
-              }
+              onBtnPressed(webdavUrl, username, password);
               Get.back();
             },
-            child: const Text("导入"),
+            child: Text(btnName),
           ),
         ],
       ),
