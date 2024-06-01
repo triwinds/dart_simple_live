@@ -122,6 +122,12 @@ class LocalStorageService extends GetxService {
 
   /// 日志记录
   static const String kLogEnable = "LogEnable";
+  
+  // Webdav Settings
+  static const String kWebdavUrl = "WebdavUrl";
+  static const String kWebdavUsername = "WebdavUsername";
+  static const String kWebdavPassword = "WebdavPassword";
+
 
   late Box settingsBox;
   late Box<String> shieldBox;

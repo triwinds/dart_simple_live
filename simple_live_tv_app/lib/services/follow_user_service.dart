@@ -61,7 +61,7 @@ class FollowUserService extends BasePageController<FollowUser> {
     try {
       var site = Sites.allSites[item.siteId]!;
       item.liveStatus.value =
-          (await site.liveSite.getLiveStatus(roomId: item.roomId)) ? 2 : 1;
+          (await site.liveSite.getLiveStatus(roomId: item.roomId)).status ? 2 : 1;
       //sortList();
       //updateLivingList();
     } catch (e) {

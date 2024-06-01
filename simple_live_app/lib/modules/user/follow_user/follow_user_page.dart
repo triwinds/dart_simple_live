@@ -68,6 +68,28 @@ class FollowUserPage extends GetView<FollowUserController> {
                     ],
                   ),
                 ),
+                PopupMenuItem(
+                  value: 4,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Remix.upload_cloud_2_line),
+                      AppStyle.hGap12,
+                      Text("Webdav 导出"),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 5,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Remix.download_cloud_2_line),
+                      AppStyle.hGap12,
+                      Text("Webdav 导入"),
+                    ],
+                  ),
+                ),
               ];
             },
             onSelected: (value) {
@@ -79,6 +101,10 @@ class FollowUserPage extends GetView<FollowUserController> {
                 controller.exportText();
               } else if (value == 3) {
                 controller.inputText();
+              } else if (value == 4) {
+                controller.exportWebdav();
+              } else if (value == 5) {
+                controller.importWebdav();
               }
             },
           ),
