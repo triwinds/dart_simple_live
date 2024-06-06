@@ -313,7 +313,7 @@ class DouyuSite implements LiveSite {
   Future<LiveStatus> getLiveStatus({required String roomId}) async {
     var roomInfo = await _getRoomInfo(roomId);
     CoreLog.d("roomInfo: $roomInfo");
-    return LiveStatus(title: roomInfo["roomName"], status: roomInfo["show_status"] == 1 && roomInfo["videoLoop"] != 1);
+    return LiveStatus(title: roomInfo["room_name"], status: roomInfo["show_status"] == 1 && roomInfo["videoLoop"] != 1);
   }
 
   Future<String> getPlayArgs(String html, String rid) async {
