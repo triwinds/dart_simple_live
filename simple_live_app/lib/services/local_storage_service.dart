@@ -129,6 +129,15 @@ class LocalStorageService extends GetxService {
   static const String kWebdavPassword = "WebdavPassword";
 
 
+  /// 开启自定义播放器视频输出
+  static const String kCustomPlayerOutput = "CustomPlayerOutput";
+
+  /// 视频输出驱动
+  static const String kVideoOutputDriver = "VideoOutputDriver";
+
+  /// 视频硬件解码器
+  static const String kVideoHardwareDecoder = "VideoHardwareDecoder";
+
   late Box settingsBox;
   late Box<String> shieldBox;
 

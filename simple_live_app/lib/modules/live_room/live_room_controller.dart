@@ -98,6 +98,10 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   /// 是否处于后台
   var isBackground = false;
 
+  /// 直播间加载失败
+  var loadError = false.obs;
+  Error? error;
+
   @override
   void onInit() {
     WidgetsBinding.instance.addObserver(this);
@@ -272,12 +276,14 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   void loadData() async {
     try {
       SmartDialog.showLoading(msg: "");
-
+      loadError.value = false;
       addSysMsg("正在读取直播间信息");
       detail.value = await site.liveSite.getRoomDetail(roomId: roomId);
 
       if (site.id == Constant.kDouyin) {
-        // 如果是抖音，且收藏的是Rid，需要转换roomID
+        // 1.6.0之前收藏的WebRid
+        // 1.6.0收藏的RoomID
+        // 1.6.0之后改回WebRid
         if (detail.value!.roomId != roomId) {
           var oldId = roomId;
           rxRoomId.value = detail.value!.roomId;
@@ -316,7 +322,10 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
       initDanmau();
       liveDanmaku.start(detail.value?.danmakuData);
     } catch (e) {
-      SmartDialog.showToast(e.toString());
+      Log.logPrint(e);
+      //SmartDialog.showToast(e.toString());
+      loadError.value = true;
+      error = e as Error;
     } finally {
       SmartDialog.dismiss(status: SmartStatus.loading);
     }
@@ -556,6 +565,14 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
       return;
     }
     Share.share(detail.value!.url);
+  }
+
+  void copyUrl() {
+    if (detail.value == null) {
+      return;
+    }
+    Utils.copyToClipboard(detail.value!.url);
+    SmartDialog.showToast("已复制直播间链接");
   }
 
   /// 底部打开播放器设置
@@ -948,6 +965,16 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
 
     // 刷新信息
     loadData();
+  }
+
+  void copyErrorDetail() {
+    Utils.copyToClipboard('''直播平台：${rxSite.value.name}
+房间号：${rxRoomId.value}
+错误信息：
+${error?.toString()}
+----------------
+${error?.stackTrace}''');
+    SmartDialog.showToast("已复制错误信息");
   }
 
   @override

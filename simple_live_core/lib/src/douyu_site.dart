@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -15,6 +16,7 @@ import 'package:simple_live_core/src/model/live_play_quality.dart';
 import 'package:simple_live_core/src/model/live_category_result.dart';
 import 'package:simple_live_core/src/model/live_status.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:simple_live_core/src/common/core_log.dart';
 
 class DouyuSite implements LiveSite {
   @override
@@ -175,20 +177,7 @@ class DouyuSite implements LiveSite {
 
   @override
   Future<LiveRoomDetail> getRoomDetail({required String roomId}) async {
-    var result = await HttpClient.instance.getJson(
-        "https://www.douyu.com/betard/$roomId",
-        queryParameters: {},
-        header: {
-          'referer': 'https://www.douyu.com/$roomId',
-          'user-agent':
-              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.43',
-        });
-    Map roomInfo;
-    if (result is String) {
-      roomInfo = json.decode(result)["room"];
-    } else {
-      roomInfo = result["room"];
-    }
+    Map roomInfo = await _getRoomInfo(roomId);
 
     var jsEncResult = await HttpClient.instance.getText(
         "https://www.douyu.com/swf_api/homeH5Enc?rids=$roomId",
@@ -253,6 +242,24 @@ class DouyuSite implements LiveSite {
     return LiveSearchRoomResult(hasMore: hasMore, items: items);
   }
 
+  Future<Map> _getRoomInfo(String roomId) async {
+    var result = await HttpClient.instance.getJson(
+        "https://www.douyu.com/betard/$roomId",
+        queryParameters: {},
+        header: {
+          'referer': 'https://www.douyu.com/$roomId',
+          'user-agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.43',
+        });
+    Map roomInfo;
+    if (result is String) {
+      roomInfo = json.decode(result)["room"];
+    } else {
+      roomInfo = result["room"];
+    }
+    return roomInfo;
+  }
+
   //生成指定长度的16进制随机字符串
   String generateRandomString(int length) {
     var random = Random.secure();
@@ -304,8 +311,9 @@ class DouyuSite implements LiveSite {
 
   @override
   Future<LiveStatus> getLiveStatus({required String roomId}) async {
-    var detail = await getRoomDetail(roomId: roomId);
-    return LiveStatus(title: detail.title, status: detail.status);
+    var roomInfo = await _getRoomInfo(roomId);
+    CoreLog.d("roomInfo: $roomInfo");
+    return LiveStatus(title: roomInfo["roomName"], status: roomInfo["show_status"] == 1 && roomInfo["videoLoop"] != 1);
   }
 
   Future<String> getPlayArgs(String html, String rid) async {
