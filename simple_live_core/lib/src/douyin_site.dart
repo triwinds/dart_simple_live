@@ -449,7 +449,7 @@ class DouyinSite implements LiveSite {
         "room_id": roomId,
         "sec_user_id": "",
         "version_code": "99.99.99",
-        "app_id": 1128,
+        "app_id": 6383,
       },
       header: await getRequestHeaders(),
     );
@@ -495,8 +495,7 @@ class DouyinSite implements LiveSite {
         }
       }
     } else {
-      var qualityData = json.decode(streamData)["data"];
-
+      var qualityData = json.decode(streamData)["data"] as Map;
       for (var quality in qulityList) {
         List<String> urls = [];
         var flvUrl =
