@@ -33,7 +33,7 @@ class FollowUserItem extends StatelessWidget {
       ),
       title: Text.rich(
         TextSpan(
-          text: item.title != "" ? '${item.title}(${item.userName})' : "${item.userName} 的直播间",
+          text: item.title != "" ? item.title : "${item.userName} 的直播间",
           children: [
             WidgetSpan(
               alignment: ui.PlaceholderAlignment.middle,
@@ -80,7 +80,7 @@ class FollowUserItem extends StatelessWidget {
           ),
           AppStyle.hGap4,
           Text(
-            site.name,
+            item.title != "" ? item.userName : site.name,
             style: const TextStyle(
               fontSize: 12,
               color: Colors.grey,
