@@ -69,9 +69,9 @@ class IndexedController extends GetxController {
     if (settingsController.firstRun) {
       settingsController.setNoFirstRun();
       await Utils.showStatement();
-      Utils.checkUpdate();
+      // Utils.checkUpdate();
     } else {
-      Utils.checkUpdate();
+      // Utils.checkUpdate();
     }
   }
 }
