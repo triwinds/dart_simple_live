@@ -111,7 +111,9 @@ class FollowService extends GetxService {
     try {
       var site = Sites.allSites[item.siteId]!;
       item.liveStatus.value =
-          (await site.liveSite.getLiveStatus(roomId: item.roomId)) ? 2 : 1;
+          (await site.liveSite.getLiveStatus(roomId: item.roomId)).status
+              ? 2
+              : 1;
     } catch (e) {
       Log.logPrint(e);
     } finally {
