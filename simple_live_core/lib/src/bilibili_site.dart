@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:simple_live_core/simple_live_core.dart';
 import 'package:simple_live_core/src/common/convert_helper.dart';
 import 'package:simple_live_core/src/common/http_client.dart';
 import 'package:simple_live_core/src/danmaku/bilibili_danmaku.dart';
@@ -350,7 +351,9 @@ class BiliBiliSite implements LiveSite {
       },
       header: getHeader(),
     );
-    return LiveStatus(title: result["data"]["title"], status: (asT<int?>(result["data"]["live_status"]) ?? 0) == 1);
+    return LiveStatus(
+        title: result["data"]["title"],
+        status: (asT<int?>(result["data"]["live_status"]) ?? 0) == 1);
   }
 
   @override
