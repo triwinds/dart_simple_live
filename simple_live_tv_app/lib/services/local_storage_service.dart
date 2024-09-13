@@ -114,6 +114,15 @@ class LocalStorageService extends GetxService {
   /// 提示哔哩哔哩登录
   static const String kBilibiliLoginTip = "BilibiliLoginTip";
 
+  /// 开启自动更新关注
+  static const String kAutoUpdateFollowEnable = "AutoUpdateFollowEnable";
+
+  /// 定时自动更新关注间隔（分钟）
+  static const String kUpdateFollowDuration = "AutoUpdateFollowDuration";
+
+  /// 开启多线程更新关注
+  static const String kUpdateFollowThreadCount = "UpdateFollowThreadCount";
+
   late Box settingsBox;
   late Box<String> shieldBox;
 
@@ -127,9 +136,14 @@ class LocalStorageService extends GetxService {
   }
 
   T getValue<T>(dynamic key, T defaultValue) {
-    var value = settingsBox.get(key, defaultValue: defaultValue) as T;
-    Log.d("Get LocalStorage：$key\r\n$value");
-    return value;
+    try {
+      var value = settingsBox.get(key, defaultValue: defaultValue) as T;
+      Log.d("Get LocalStorage：$key\r\n$value");
+      return value;
+    } catch (e) {
+      Log.logPrint(e);
+      return defaultValue;
+    }
   }
 
   Future setValue<T>(dynamic key, T value) async {

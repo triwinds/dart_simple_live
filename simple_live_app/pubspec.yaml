@@ -1,5 +1,5 @@
 name: simple_live_app
-version: 1.6.5+10605
+version: 1.7.3+10703
 publish_to: none
 description: "Simple Live APP"
 environment: 
@@ -10,7 +10,7 @@ dependencies:
     path: ../simple_live_core
   # 图标
   cupertino_icons: ^1.0.2
-  remixicon: ^1.0.0 #Remix图标
+  remixicon: ^1.2.0 #Remix图标
 
   # 框架、工具
   get: ^4.6.6 #状态管理、路由管理、国际化
@@ -62,11 +62,24 @@ dependencies:
   shelf: ^1.4.1 
   shelf_router: ^1.1.4
   network_info_plus: 3.0.5
+  signalr_netcore: ^1.3.9 #SignalR
 
   # 视频播放
-  media_kit: ^1.1.10+1
-  media_kit_video: ^1.2.4
-  media_kit_libs_video: ^1.0.4
+  media_kit:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./media_kit
+  media_kit_video:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./media_kit_video
+  media_kit_libs_video:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./libs/universal/media_kit_libs_video
 
   flutter: 
     sdk: flutter
@@ -74,6 +87,28 @@ dependencies:
     sdk: flutter
   http: ^1.2.1
 
+
+dependency_overrides: 
+  media_kit:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./media_kit
+  media_kit_video:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./media_kit_video
+  media_kit_libs_video:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./libs/universal/media_kit_libs_video
+  media_kit_native_event_loop:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./media_kit_native_event_loop
 
 dev_dependencies: 
   flutter_lints: ^2.0.0
